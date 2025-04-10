@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('id_pm_barang')->unsigned();
             $table->foreign('id_pm_barang')->references('id')->on('pm__barangs')->ondelete('cascade');
-            $table->bigInteger('id_kondisi')->unsigned();
-            $table->foreign('id_kondisi')->references('id')->on('kondisis')->ondelete('cascade');
             $table->string('keterangan');
             $table->string('cover');
             $table->timestamps();

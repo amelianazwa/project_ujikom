@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kondisi;
 use App\Models\pm_barang;
 use App\Models\l_Barang;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -16,18 +15,19 @@ class LBarangController extends Controller
     }
     public function index()
     {
-        $l_barang =  l_barang::all();
-        $pm_barang =  pm_barang::all();
-        confirmDelete('Delete','Are you sure?');
-        return view('l_barang.index', compact('l_barang','pm_barang'));
+        // Memuat relasi pm_barang beserta barang agar tidak null
+        $l_barang = l_Barang::with('pm_barang.barang')->get(); 
+        $pm_barang = pm_barang::with('barang')->get(); // Memuat relasi barang
+    
+        confirmDelete('Delete', 'Are you sure?');
+        
+        return view('l_barang.index', compact('l_barang', 'pm_barang'));
     }
-
 
     public function create()
     {
         $pm_barang =  pm_barang::all();
-        $kondisi = Kondisi::all();
-        return view('l_barang.create', compact('pm_barang', 'kondisi'));
+        return view('l_barang.create', compact('pm_barang'));
     }
 
 
@@ -40,7 +40,6 @@ class LBarangController extends Controller
 
         $l_barang = new l_barang();
         $l_barang->id_pm_barang = $request->id_pm_barang;
-        $l_barang->id_kondisi = $request->id_kondisi;
         $l_barang->keterangan = $request->keterangan;
 
         if ($request->hasFile('cover')) {
@@ -66,9 +65,8 @@ class LBarangController extends Controller
     public function edit($id)
     {
         $pm_barang =  pm_barang::all();
-        $kondisi = Kondisi::all();
         $l_barang = l_barang::findOrFail($id);
-        return view('l_barang.edit', compact('l_barang','pm_barang','kondisi'));
+        return view('l_barang.edit', compact('l_barang','pm_barang'));
     }
 
 
@@ -81,7 +79,6 @@ class LBarangController extends Controller
 
         $l_barang = l_barang::findOrFail($id);
         $l_barang->id_pm_barang = $request->id_pm_barang;
-        $l_barang->id_kondisi = $request->id_kondisi;
         $l_barang->keterangan = $request->keterangan;
 
         if ($request->hasFile('cover')) {

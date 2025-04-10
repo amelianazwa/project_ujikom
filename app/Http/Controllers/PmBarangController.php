@@ -20,9 +20,12 @@ class PmBarangController extends Controller
 
     public function index()
     {
-        $pm_barang = pm_barang::all();
-        confirmDelete('Delete', 'Are you sure?');
-        return view('pm_barang.index', compact('pm_barang'));
+        $pm_barang = pm_barang::with('anggota', 'ruangan', 'peminjaman_details.barang')->get();
+        $anggota = Anggota::all(); // Pastikan model Anggota ada
+        $barang = Barang::all(); // Jika barang juga dibutuhkan
+        $ruangan = Ruangan::all(); // Jika ruangan juga dibutuhkan
+    
+        return view('pm_barang.index', compact('pm_barang', 'anggota', 'barang', 'ruangan'));
     }
 
     public function create()
