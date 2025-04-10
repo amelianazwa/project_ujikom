@@ -29,8 +29,6 @@ class PBarangController extends Controller
 
     public function store(Request $request)
     {
-        
-    
         // Simpan data pengembalian barang
         $p_barang = new p_barang();
         $p_barang->code_peminjaman = $request->code_peminjaman;
@@ -38,24 +36,23 @@ class PBarangController extends Controller
         $p_barang->tanggal_pengembalian = $request->tanggal_pengembalian;
         $p_barang->keterangan = $request->keterangan;
         $p_barang->save();
-    
+
         // Ambil data peminjaman berdasarkan kode peminjaman
         $pm_barang = pm_barang::where('code_peminjaman', $request->code_peminjaman)->first();
-    
+
         if ($pm_barang) {
             foreach ($pm_barang->peminjaman_details as $detail) {
-                $barang = $detail->barang; // Pastikan relasi ini ada di model
+                $barang = $detail->barang;
                 if ($barang) {
                     $barang->jumlah += $detail->jumlah_pinjam;
                     $barang->save();
                 }
             }
         }
-    
+
         Alert::success('Success', 'Barang berhasil dikembalikan')->autoClose(1000);
         return redirect()->route('p_barang.index');
     }
-    
 
     public function edit($id)
     {
@@ -89,11 +86,24 @@ class PBarangController extends Controller
         return redirect()->route('p_barang.index');
     }
 
+    // ✅ Tambahan fungsi getPeminjamanDetails
     public function getPeminjamanDetails($code_peminjaman)
     {
-        $pm_barang = pm_barang::where('code_peminjaman', $code_peminjaman)->with('peminjaman_details.barang')->first();
-        return response()->json($pm_barang);
+        $pm_barang = pm_barang::where('code_peminjaman', $code_peminjaman)
+                    ->with('peminjaman_details.barang') // Pastikan relasi barang di-load
+                    ->first();
+
+        if (!$pm_barang) {
+            return response()->json(['error' => 'Data tidak ditemukan'], 404);
+        }
+
+        return response()->json([
+            'peminjaman_details' => $pm_barang->peminjaman_details->map(function ($detail) {
+                return [
+                    'nama_barang' => optional($detail->barang)->nama_barang ?? 'Barang tidak ditemukan',
+                    'jumlah_pinjam' => $detail->jumlah_pinjam
+                ];
+            })
+        ]);
     }
 }
-
-

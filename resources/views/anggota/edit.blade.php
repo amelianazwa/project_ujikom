@@ -19,7 +19,7 @@
                     <form action="{{ route('anggota.update', $anggota->id) }}" method="POST"
                         enctype="multipart/form-data">
                         @method('put')
-                        @csrf 
+                        @csrf
                         <div class="mb-3">
                             <label class="form-label">Kode Mahasiswa</label>
                             <input type="text" class="form-control @error('code_anggota') is-invalid @enderror" name="code_anggota"
@@ -32,8 +32,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Nama Anggota</label>
-                            <input type="text" class="form-control @error('nama_anggota') is-invalid @enderror" name="nama_anggota"
+                            <label class="form-label">Nama Peminjam</label>
+                            <input type="text" class="form-control @error('nama_anggota') is-invalid @enderror" name="nama_peminjam"
                                 value="{{ $anggota->nama_peminjam }}" placeholder="Nama peminjam" required>
                             @error('nama_anggota')
                             <span class="invalid-feedback" role="alert">

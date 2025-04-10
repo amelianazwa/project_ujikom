@@ -53,3 +53,4 @@ Route::get('pm_ruangan/export-ruangan/{idPeminjaman}', [App\Http\Controllers\Pmr
 
 Route::post('/barang/{id}/pinjam', [App\Http\Controllers\BarangController::class, 'pinjam'])->name('barang.pinjam');
 
+

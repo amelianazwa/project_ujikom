@@ -5,21 +5,11 @@
 @endsection
 
 @section('content')
-<div class="container mt-10">
-    <div class="row page-titles mx-0">
-        <div class="col-sm-12 p-md-0">
-        </div>
-    </div>
-</div>
-<div class="container">
+<div class="container mt-3">
     <div class="card">
-        <div class="card-header">
-            <div class="float-start">
-                <h5>Tambah Pengembalian Barang</h5>
-            </div>
-            <div class="float-end">
-                <a href="{{ route('p_barang.index') }}" class="btn btn-sm btn-primary">Kembali</a>
-            </div>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Tambah Pengembalian Barang</h5>
+            <a href="{{ route('p_barang.index') }}" class="btn btn-sm btn-primary">Kembali</a>
         </div>
 
         <div class="card-body">
@@ -57,7 +47,7 @@
             <div class="mt-4">
                 <h6>Barang yang Dipinjam</h6>
                 <table class="table table-bordered">
-                    <thead>
+                    <thead class="table-dark">
                         <tr>
                             <th>Nama Barang</th>
                             <th>Jumlah</th>
@@ -79,32 +69,38 @@
 <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.js"></script>
 <script>
-    new DataTable('#example');
-
     document.getElementById('code_peminjaman').addEventListener('change', function() {
         let codePeminjaman = this.value;
         let tbody = document.getElementById('daftar-barang');
+        
         tbody.innerHTML = '<tr><td colspan="2" class="text-center">Loading...</td></tr>';
 
         if (codePeminjaman) {
             fetch(`/get-peminjaman-details/${codePeminjaman}`)
                 .then(response => response.json())
                 .then(data => {
+                    console.log("DATA DARI SERVER:", data); // Debug output
                     tbody.innerHTML = '';
-                    if (data && data.peminjaman_details.length > 0) {
+
+                    if (!data || data.error) {
+                        tbody.innerHTML = `<tr><td colspan="2" class="text-center text-danger">${data.error || 'Terjadi kesalahan'}</td></tr>`;
+                        return;
+                    }
+
+                    if (data.peminjaman_details && data.peminjaman_details.length > 0) {
                         data.peminjaman_details.forEach(detail => {
                             tbody.innerHTML += `<tr>
-                                <td>\${detail.barang.nama_barang}</td>
-                                <td>\${detail.jumlah_pinjam}</td>
+                                <td>${detail.nama_barang || 'Barang tidak ditemukan'}</td>
+                                <td>${detail.jumlah_pinjam || '0'}</td>
                             </tr>`;
                         });
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="2" class="text-center">Tidak ada data barang</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="2" class="text-center">Tidak ada barang yang dipinjam</td></tr>';
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    tbody.innerHTML = '<tr><td colspan="2" class="text-center text-danger">Terjadi kesalahan</td></tr>';
+                    console.error("Fetch Error:", error);
+                    tbody.innerHTML = '<tr><td colspan="2" class="text-center text-danger">Terjadi kesalahan saat mengambil data</td></tr>';
                 });
         } else {
             tbody.innerHTML = '<tr><td colspan="2" class="text-center">Pilih kode peminjaman terlebih dahulu</td></tr>';

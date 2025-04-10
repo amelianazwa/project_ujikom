@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class pm_Ruangan extends Model
 {
     use HasFactory;
-    protected $fillable = ['id','code_peminjaman','id_anggota','id_ruangan','tanggal_peminjaman','jenis_kegiatan','waktu_peminjaman','cover'];
+    protected $fillable = ['id','code_peminjaman','id_anggota','tanggal_peminjaman','jenis_kegiatan','waktu_peminjaman','cover'];
     public $timestamps = true;
 
     public function ruangan()
@@ -20,6 +20,11 @@ class pm_Ruangan extends Model
     {
         return $this->belongsTo(anggota::class, 'id_anggota');
     }
+    public function PeminjamanDetailRuangan()
+    {
+        return $this->hasMany( PeminjamanDetailRuangan::class, 'id_pm_ruangan');
+    }
+
 
     public function deleteImage(){
         if($this->cover && file_exists(public_path('images/pm_ruangan' . $this->cover))){

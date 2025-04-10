@@ -28,6 +28,7 @@ class PmBarangController extends Controller
         return view('pm_barang.index', compact('pm_barang', 'anggota', 'barang', 'ruangan'));
     }
 
+    
     public function create()
     {
         $barang = Barang::all();

@@ -1,111 +1,91 @@
-
 @extends('layouts.admin')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <div class="float-start">
-                        {{ __('Peminjaman Ruangan') }}
-                    </div>
-                    <div class="float-end">
-                        <a href="{{ route('pm_ruangan.index') }}" class="btn btn-sm btn-primary">Kembali</a>
-                    </div>
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>Edit Peminjaman Ruangan</h5>
+            <a href="{{ route('pm_ruangan.index') }}" class="btn btn-primary btn-sm">Kembali</a>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('pm_ruangan.update', $pm_ruangan->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                
+                <div class="mb-3">
+                    <label class="form-label">Nama Peminjam</label>
+                    <select name="id_anggota" class="form-control" required>
+                        @foreach($anggota as $a)
+                            <option value="{{ $a->id }}" {{ $pm_ruangan->id_anggota == $a->id ? 'selected' : '' }}>{{ $a->nama_peminjam }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
-                <div class="card-body">
-                    <form action="{{ route('pm_ruangan.update', $pm_ruangan->id) }}" method="POST"
-                        enctype="multipart/form-data">
-                        @method('put')
-                        @csrf
+                <div class="mb-3">
+                    <label class="form-label">Jenis Kegiatan</label>
+                    <input type="text" name="jenis_kegiatan" class="form-control" value="{{ $pm_ruangan->jenis_kegiatan }}" required>
+                </div>
 
-                         <div class="mb-3">
-                            <label class="form-label">Kode Peminjaman</label>
-                            <input type="text" class="form-control @error('code_peminjaman') is-invalid @enderror" name="code_peminjaman"
-                                value="{{ $pm_ruangan->code_peminjaman }}" placeholder="Kode Peminjaman" required>
-                            @error('code_peminjaman')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                            @enderror
-                        </div>
+                <div class="mb-3">
+                    <label class="form-label">Tanggal Peminjaman</label>
+                    <input type="date" name="tanggal_peminjaman" class="form-control" value="{{ $pm_ruangan->tanggal_peminjaman }}" required>
+                </div>
 
-                        <div class="mb-3">
-                            <label for="">Nama Peminjam</label>
-                            <select name="id_anggota" id="" class="form-control">
-                                @foreach ($anggota as $item)
-                                    <option value="{{$item->id}}" {{$item->id == $pm_ruangan->id_anggota ? 'selected': ''}}>{{ $item->nama_peminjam }}</option>
+                <div class="mb-3">
+                    <label class="form-label">Waktu Peminjaman</label>
+                    <input type="time" name="waktu_peminjaman" class="form-control" value="{{ $pm_ruangan->waktu_peminjaman }}" required>
+                </div>
+
+                <h5 class="mt-4">Ruangan yang Dipinjam</h5>
+                <div id="ruangan-container">
+                    @foreach($details as $detail)
+                    <div class="row mb-2 ruangan-item">
+                        <div class="col-md-10">
+                            <select name="id_ruangan[]" class="form-control" required>
+                                @foreach($ruangan as $r)
+                                    <option value="{{ $r->id }}" {{ $detail->id_ruangan == $r->id ? 'selected' : '' }}>{{ $r->nama_ruangan }}</option>
                                 @endforeach
                             </select>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="">Ruangan</label>
-                            <select name="id_ruangan" id="" class="form-control">
-                                @foreach ($ruangan as $item)
-                                    <option value="{{$item->id}}" {{$item->id == $pm_ruangan->id_ruangan ? 'selected': ''}}>{{ $item->nama_ruangan }}</option>
-                                @endforeach
-                            </select>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-danger remove-ruangan">✖</button>
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Tanggal Peminjaman</label>
-                            <input type="date" class="form-control @error('tanggal_peminjaman') is-invalid @enderror" name="tanggal_peminjaman"
-                                value="{{ $pm_ruangan->tanggal_peminjaman }}" placeholder="Tanggal peminjaman" required>
-                            @error('tanggal_peminjaman')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Jenis Kegiatan</label>
-                            <input type="text" class="form-control @error('jenis_kegiatan') is-invalid @enderror" name="jenis_kegiatan"
-                                value="{{ $pm_ruangan->jenis_kegiatan }}" placeholder="Jenis kegiatan" required>
-                            @error('jenis_kegiatan')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Tanggal Peminjaman</label>
-                            <input type="date" class="form-control @error('tanggal_peminjaman') is-invalid @enderror" name="tanggal_peminjaman"
-                                value="{{ $pm_ruangan->tanggal_peminjaman }}" placeholder="Tanggal peminjaman" required>
-                            @error('tanggal_peminjaman')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Waktu Peminjaman</label>
-                            <input type="date" class="form-control @error('waktu_peminjaman') is-invalid @enderror" name="waktu_peminjaman"
-                                value="{{ $pm_ruangan->waktu_peminjaman }}" placeholder="Waktu peminjaman" required>
-                            @error('waktu_peminjaman')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Dokumentasi</label>
-                            <img src="{{ asset('/images/pm_ruangan/' . $pm_ruangan->cover) }}" width="100">
-                            <input type="file" class="form-control" name="cover">
-                        </div>
-
-                        <button type="submit" class="btn btn-sm btn-primary">SIMPAN</button>
-                        <button type="reset" class="btn btn-sm btn-danger">RESET</button>
-                    </form>
+                    </div>
+                    @endforeach
                 </div>
-            </div>
+                
+                <button type="button" class="btn btn-primary mt-2" id="add-ruangan">+ Tambah Ruangan</button>
+                <br><br>
+                <button type="submit" class="btn btn-success">Update</button>
+            </form>
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('add-ruangan').addEventListener('click', function() {
+        let container = document.getElementById('ruangan-container');
+        let newRow = document.createElement('div');
+        newRow.classList.add('row', 'mb-2', 'ruangan-item');
+        newRow.innerHTML = `
+            <div class="col-md-10">
+                <select name="id_ruangan[]" class="form-control" required>
+                    @foreach($ruangan as $r)
+                        <option value="{{ $r->id }}">{{ $r->nama_ruangan }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-danger remove-ruangan">✖</button>
+            </div>
+        `;
+        container.appendChild(newRow);
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-ruangan')) {
+            e.target.closest('.ruangan-item').remove();
+        }
+    });
+</script>
 @endsection

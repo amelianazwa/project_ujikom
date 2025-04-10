@@ -10,8 +10,9 @@ class AnggotaController extends Controller
 {
     public function __construct()
     {
-        $this -> middleware('auth');
+        $this->middleware('auth');
     }
+
     public function index()
     {
         $anggota = anggota::all();
@@ -19,10 +20,13 @@ class AnggotaController extends Controller
         return view('anggota.index', compact('anggota'));
     }
 
-
     public function create()
     {
-        return view('anggota.create');
+        $last = anggota::latest()->first();
+        $nextNumber = $last ? ((int)substr($last->code_anggota, 3)) + 1 : 1;
+        $code_anggota = 'AGT' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+
+        return view('anggota.create', compact('code_anggota'));
     }
 
     public function store(Request $request)
@@ -30,10 +34,9 @@ class AnggotaController extends Controller
         $validated = $request->validate([
             'code_anggota' => 'required',
             'nama_peminjam' => 'required',
-            'email' => 'required',
+            'email' => 'required|email',
             'no_telepon' => 'required',
             'instansi_lembaga' => 'required',
-
         ]);
 
         $anggota = new anggota();
@@ -42,16 +45,10 @@ class AnggotaController extends Controller
         $anggota->email = $request->email;
         $anggota->no_telepon = $request->no_telepon;
         $anggota->instansi_lembaga = $request->instansi_lembaga;
-
-        Alert::success('Success','data berhasil disimpan')->autoClose(1000);
         $anggota->save();
 
+        Alert::success('Success', 'Data berhasil disimpan')->autoClose(1000);
         return redirect()->route('anggota.index');
-    }
-
-    public function show(anggota $anggota)
-    {
-        //
     }
 
     public function edit($id)
@@ -60,16 +57,14 @@ class AnggotaController extends Controller
         return view('anggota.edit', compact('anggota'));
     }
 
-
     public function update(Request $request, $id)
     {
         $this->validate($request, [
             'code_anggota' => 'required',
             'nama_peminjam' => 'required',
-            'email' => 'required',
+            'email' => 'required|email',
             'no_telepon' => 'required',
             'instansi_lembaga' => 'required',
-
         ]);
 
         $anggota = anggota::findOrFail($id);
@@ -78,17 +73,17 @@ class AnggotaController extends Controller
         $anggota->email = $request->email;
         $anggota->no_telepon = $request->no_telepon;
         $anggota->instansi_lembaga = $request->instansi_lembaga;
-
-
-        Alert::success('Success','data berhasil diubah')->autoClose(1000);
         $anggota->save();
+
+        Alert::success('Success', 'Data berhasil diubah')->autoClose(1000);
         return redirect()->route('anggota.index');
     }
+
     public function destroy($id)
     {
         $anggota = anggota::findOrFail($id);
         $anggota->delete();
-        Alert::success('success','Data berhasil Dihapus');
+        Alert::success('Success','Data berhasil dihapus');
         return redirect()->route('anggota.index');
     }
 }

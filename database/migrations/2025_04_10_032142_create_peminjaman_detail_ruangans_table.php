@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pm__ruangans', function (Blueprint $table) {
+        Schema::create('peminjaman_detail_ruangans', function (Blueprint $table) {
             $table->id();
-            $table->string('code_peminjaman');
-            $table->bigInteger('id_anggota')->unsigned();
-            $table->string('tanggal_peminjaman');
-            $table->string('jenis_kegiatan');
-            $table->string('waktu_peminjaman');
+            $table->unsignedBigInteger('id_pm_ruangan');
+            $table->unsignedBigInteger('id_ruangan')->nullable();
+
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pm__ruangans');
+        Schema::dropIfExists('peminjaman_detail_ruangans');
     }
 };

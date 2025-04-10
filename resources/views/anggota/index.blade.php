@@ -31,7 +31,7 @@
                     <tr>
                         <th>No</th>
                         <th>Kode Anggota</th>
-                        <th>Nama Anggota</th>
+                        <th>Nama Peminjam</th>
                         <th>Email</th>
                         <th>Nomer Telepon</th>
                         <th>Instansi Lembaga</th>
