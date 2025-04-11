@@ -35,4 +35,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
 });
 
-Route::middleware('auth:sanctum')->get('/profile', [\App\Http\Controllers\Api\AuthController::class, 'profile']);
+Route::middleware('auth:sanctum')->get('/profile', [UserController::class, 'profile']);
