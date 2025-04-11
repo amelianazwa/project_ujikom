@@ -18,9 +18,12 @@
                         @csrf
 
                         <div class="mb-2">
-                            <label class="form-label">Kode Mahasiswa</label>
-                            <input type="text" class="form-control" name="code_anggota"
-                                value="{{ $code_anggota }}" readonly>
+                            <label class="form-label">NIM</label>
+                            <input type="text" class="form-control @error('nim') is-invalid @enderror" name="nim"
+                                value="{{ old('nim') }}" placeholder="Masukkan NIM" required>
+                            @error('nim')
+                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                            @enderror
                         </div>
 
                         <div class="mb-2">

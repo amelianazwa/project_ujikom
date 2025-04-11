@@ -11,8 +11,10 @@ class BarangController extends Controller
 {
     public function index()
     {
-        $barang = Barang::all();
+        // Menggunakan eager loading untuk menghindari query berulang
+        $barang = Barang::with('kategori')->get();
         confirmDelete('Delete', 'Are you sure?');
+
         return view('barang.index', compact('barang'));
     }
 
@@ -36,16 +38,10 @@ class BarangController extends Controller
             'merk' => 'required',
             'detail' => 'required',
             'jumlah' => 'required',
+            'id_kategori' => 'required',
         ]);
 
-        $barang = new Barang();
-        $barang->code_barang = $request->code_barang;
-        $barang->nama_barang = $request->nama_barang;
-        $barang->merk = $request->merk;
-        $barang->id_kategori = $request->id_kategori;
-        $barang->detail = $request->detail;
-        $barang->jumlah = $request->jumlah;
-        $barang->save();
+        Barang::create($validated);
 
         Alert::success('Success', 'Data berhasil disimpan')->autoClose(1000);
         return redirect()->route('barang.index');
@@ -55,6 +51,7 @@ class BarangController extends Controller
     {
         $kategori = Kategori::all();
         $barang = Barang::findOrFail($id);
+
         return view('barang.edit', compact('barang', 'kategori'));
     }
 
@@ -66,16 +63,10 @@ class BarangController extends Controller
             'merk' => 'required',
             'detail' => 'required',
             'jumlah' => 'required',
+            'id_kategori' => 'required',
         ]);
 
-        $barang = Barang::findOrFail($id);
-        $barang->code_barang = $request->code_barang;
-        $barang->nama_barang = $request->nama_barang;
-        $barang->merk = $request->merk;
-        $barang->id_kategori = $request->id_kategori;
-        $barang->detail = $request->detail;
-        $barang->jumlah = $request->jumlah;
-        $barang->save();
+        Barang::where('id', $id)->update($validated);
 
         Alert::success('Success', 'Data berhasil dirubah')->autoClose(1000);
         return redirect()->route('barang.index');
@@ -84,10 +75,20 @@ class BarangController extends Controller
     public function destroy($id)
     {
         $barang = Barang::findOrFail($id);
-        if ($barang->pm_barang()->count() > 0) {
-            return redirect()->route('barang.index')->with('error', 'barang tidak bisa di hapus karena belum di kembalikan.');
+
+        // Pastikan barang belum dipinjam atau sudah dikembalikan
+        $isDipinjam = $barang->peminjaman_details()
+            ->whereHas('pm_barang', function ($query) {
+                $query->whereNotIn('code_peminjaman', function ($subQuery) {
+                    $subQuery->select('code_peminjaman')->from('p_barangs'); // Barang yang sudah dikembalikan
+                });
+            })->exists();
+
+        if ($isDipinjam) {
+            return redirect()->route('barang.index')->with('error', 'Barang tidak bisa dihapus karena masih dipinjam.');
         }
+
         $barang->delete();
-        return redirect()->route('barang.index')->with('success', 'barang berhasil di hapus.');
+        return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus.');
     }
 }

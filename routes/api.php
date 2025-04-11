@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Anggota;
+use App\Http\Controllers\Api\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,3 +34,5 @@ Route::prefix('anggota')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
 });
+
+Route::middleware('auth:sanctum')->get('/profile', [\App\Http\Controllers\Api\AuthController::class, 'profile']);

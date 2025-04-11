@@ -33,6 +33,7 @@
                         <th>No</th>
                         <th>Kode Peminjam</th>
                         <th>Nama Peminjam</th>
+                        <th>NIM</th>
                         <th>Jenis kegiatan</th>
                         <th>Nama Ruangan</th>
                         <th>Tanggal Peminjaman</th>
@@ -49,6 +50,7 @@
                         <td>{{ $i++ }}</td>
                         <td>{{ $data->code_peminjaman }}</td>
                         <td>{{ $data->anggota->nama_peminjam}}</td>
+                        <td>{{ $data->anggota->nim}}</td>
                         <td>{{ $data->jenis_kegiatan }}</td>
                          <td>
                         <ul>

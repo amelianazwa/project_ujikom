@@ -18,12 +18,14 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="id_anggota" class="form-label">Nama Peminjam</label>
-                            <select name="id_anggota" class="form-select" required>
-                                @foreach ($anggota as $data)
-                                    <option value="{{ $data->id }}">{{ $data->nama_peminjam }}</option>
-                                @endforeach
-                            </select>
+                            <label for="nim" class="form-label">NIM</label>
+                            <input type="text" id="nim" name="nim" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nama_peminjam" class="form-label">Nama Peminjam</label>
+                            <input type="hidden" id="id_anggota" name="id_anggota">
+                            <input type="text" id="nama_peminjam" class="form-control bg-light" readonly>
                         </div>
 
                         <div class="mb-3">
@@ -72,7 +74,6 @@
                             </div>
                         </div>
 
-                       
                         <div class="text-end">
                             <button type="submit" class="btn btn-primary">Simpan</button>
                         </div>
@@ -85,6 +86,23 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    let dataAnggota = @json($anggota);
+
+    document.getElementById('nim').addEventListener('input', function () {
+        let nimInput = this.value.trim();
+        let namaField = document.getElementById('nama_peminjam');
+        let idAnggotaField = document.getElementById('id_anggota');
+        let foundAnggota = dataAnggota.find(a => a.nim === nimInput);
+
+        if (foundAnggota) {
+            namaField.value = foundAnggota.nama_peminjam;
+            idAnggotaField.value = foundAnggota.id;
+        } else {
+            namaField.value = "";
+            idAnggotaField.value = "";
+        }
+    });
+
     function updateRuanganOptions() {
         let selectedItems = [];
 

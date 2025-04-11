@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\anggota;
+use App\Models\Anggota;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Http\Request;
 
@@ -15,32 +15,28 @@ class AnggotaController extends Controller
 
     public function index()
     {
-        $anggota = anggota::all();
-        confirmDelete('Delete','Are you sure?');
+        $anggota = Anggota::all();
+        confirmDelete('Delete', 'Are you sure?');
         return view('anggota.index', compact('anggota'));
     }
 
     public function create()
     {
-        $last = anggota::latest()->first();
-        $nextNumber = $last ? ((int)substr($last->code_anggota, 3)) + 1 : 1;
-        $code_anggota = 'AGT' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
-
-        return view('anggota.create', compact('code_anggota'));
+        return view('anggota.create');
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'code_anggota' => 'required',
+            'nim' => 'required|unique:anggotas,nim',
             'nama_peminjam' => 'required',
             'email' => 'required|email',
             'no_telepon' => 'required',
             'instansi_lembaga' => 'required',
         ]);
 
-        $anggota = new anggota();
-        $anggota->code_anggota = $request->code_anggota;
+        $anggota = new Anggota();
+        $anggota->nim = $request->nim;
         $anggota->nama_peminjam = $request->nama_peminjam;
         $anggota->email = $request->email;
         $anggota->no_telepon = $request->no_telepon;
@@ -53,22 +49,22 @@ class AnggotaController extends Controller
 
     public function edit($id)
     {
-        $anggota = anggota::findOrFail($id);
+        $anggota = Anggota::findOrFail($id);
         return view('anggota.edit', compact('anggota'));
     }
 
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'code_anggota' => 'required',
+        $validated = $request->validate([
+            'nim' => 'required|unique:anggotas,nim,' . $id,
             'nama_peminjam' => 'required',
             'email' => 'required|email',
             'no_telepon' => 'required',
             'instansi_lembaga' => 'required',
         ]);
 
-        $anggota = anggota::findOrFail($id);
-        $anggota->code_anggota = $request->code_anggota;
+        $anggota = Anggota::findOrFail($id);
+        $anggota->nim = $request->nim;
         $anggota->nama_peminjam = $request->nama_peminjam;
         $anggota->email = $request->email;
         $anggota->no_telepon = $request->no_telepon;
@@ -81,9 +77,9 @@ class AnggotaController extends Controller
 
     public function destroy($id)
     {
-        $anggota = anggota::findOrFail($id);
+        $anggota = Anggota::findOrFail($id);
         $anggota->delete();
-        Alert::success('Success','Data berhasil dihapus');
+        Alert::success('Success', 'Data berhasil dihapus');
         return redirect()->route('anggota.index');
     }
 }

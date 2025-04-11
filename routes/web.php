@@ -43,6 +43,8 @@ Route::resource('p_barang', App\Http\Controllers\PBarangController::class)->midd
 Route::resource('l_barang', App\Http\Controllers\LBarangController::class)->middleware('auth');
 Route::resource('l_ruangan', App\Http\Controllers\LRuanganController::class)->middleware('auth');
 
+Route::get('profile', [App\Http\Controllers\HomeController::class, 'profile'])->name('profile.index');
+
 // Route untuk menampilkan PDF
 // web.php
 Route::get('/pm_barang/view-pdf/{idPeminjaman}', [App\Http\Controllers\PmBarangController::class, 'viewPDF'])->name('pm_barang.view-pdf');
@@ -54,3 +56,7 @@ Route::get('pm_ruangan/export-ruangan/{idPeminjaman}', [App\Http\Controllers\Pmr
 Route::post('/barang/{id}/pinjam', [App\Http\Controllers\BarangController::class, 'pinjam'])->name('barang.pinjam');
 
 
+Route::get('/api/anggota/by-nim/{nim}', function ($nim) {
+    $anggota = Anggota::where('nim', $nim)->first();
+    return response()->json($anggota);
+});

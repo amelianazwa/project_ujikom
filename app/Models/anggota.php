@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class anggota extends Model
+class Anggota extends Model
 {
     use HasFactory;
-    protected $fillable = ['id','code_anggota', 'nama_peminjam','email','no_telepon','instansi_lembaga'];
+    protected $fillable = ['id', 'nim', 'nama_peminjam', 'email', 'no_telepon', 'instansi_lembaga'];
     public $timestamps = true;
 
     public function pm_barang()

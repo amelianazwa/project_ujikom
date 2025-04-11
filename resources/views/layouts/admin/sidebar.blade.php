@@ -37,6 +37,15 @@
     <div class="menu-inner-shadow"></div>
 
     <ul class="menu-inner py-1">
+
+        <!-- profile -->
+        <li class="menu-item {{ request()->routeIs('profile.index') ? 'active' : '' }}">
+            <a href="{{ route('profile.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-user-circle"></i>
+                <div>Profil</div>
+            </a>
+        </li>
+
         <!-- Dashboards -->
         <li class="menu-item {{ request()->routeIs('home') ? 'active' : '' }}">
             <a href="{{ route('home') }}" class="menu-link">

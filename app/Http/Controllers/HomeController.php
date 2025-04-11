@@ -33,4 +33,11 @@ class HomeController extends Controller
         $ruangan = Ruangan::count('id');
         return view('home',compact('kategori','barang','anggota','ruangan'));
     }
+
+    public function profile()
+    {
+        $title = 'Profil';
+        $user = auth()->user();
+        return view('profile.index', compact('user', 'title'));
+    }
 }

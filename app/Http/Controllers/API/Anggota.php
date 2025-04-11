@@ -25,7 +25,7 @@ class Anggota extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'code_anggota' => 'required',
+            'nim' => 'required',
             'nama_peminjam' => 'required',
             'email' => 'required|email',
             'no_telepon' => 'required',
@@ -51,7 +51,7 @@ class Anggota extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'code_anggota' => 'required',
+            'nim' => 'required',
             'nama_peminjam' => 'required',
             'email' => 'required|email',
             'no_telepon' => 'required',

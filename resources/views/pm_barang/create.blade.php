@@ -17,13 +17,15 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="id_anggota" class="form-label">Nama Peminjam</label>
-                            <select name="id_anggota" class="form-select">
-                                @foreach ($anggota as $data)
-                                    <option value="{{$data->id}}">{{ $data->nama_peminjam}}</option>
-                                @endforeach
-                            </select>
-                        </div>
+        <label for="nim" class="form-label">NIM</label>
+        <input type="text" id="nim" name="nim" class="form-control">
+    </div>
+
+    <div class="mb-3">
+        <label for="nama_peminjam" class="form-label">Nama Peminjam</label>
+        <input type="hidden" id="id_anggota" name="id_anggota">
+        <input type="text" id="nama_peminjam" class="form-control bg-light" readonly>
+    </div>
 
                         <div class="mb-3">
                             <label class="form-label">Jenis Kegiatan</label>
@@ -96,17 +98,32 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    let dataAnggota = @json($anggota); // Ambil data anggota dari Blade ke JS
+
+    document.getElementById('nim').addEventListener('input', function () {
+    let nimInput = this.value.trim();
+    let namaField = document.getElementById('nama_peminjam');
+    let idAnggotaField = document.getElementById('id_anggota'); // Tambahkan ini
+    let foundAnggota = dataAnggota.find(a => a.nim === nimInput);
+
+    if (foundAnggota) {
+        namaField.value = foundAnggota.nama_peminjam;
+        idAnggotaField.value = foundAnggota.id; // Isi ID Anggota
+    } else {
+        namaField.value = "";
+        idAnggotaField.value = ""; // Kosongkan jika tidak ditemukan
+    }
+});
+
     function updateBarangOptions() {
         let selectedItems = [];
 
-        // Mengumpulkan barang yang telah dipilih
         document.querySelectorAll('.barang-select').forEach(select => {
             if (select.value) {
                 selectedItems.push(select.value);
             }
         });
 
-        // Menonaktifkan opsi barang yang sudah dipilih
         document.querySelectorAll('.barang-select').forEach(select => {
             let currentValue = select.value;
             select.querySelectorAll('option').forEach(option => {
@@ -123,12 +140,10 @@ document.addEventListener('DOMContentLoaded', function () {
         let table = document.getElementById('barang-table').getElementsByTagName('tbody')[0];
         let newRow = document.querySelector('.barang-row').cloneNode(true);
 
-        // Reset nilai pada elemen baru
         newRow.querySelector("input").value = "";
         let selectElement = newRow.querySelector(".barang-select");
         selectElement.value = "";
 
-        // Tambahkan event listener untuk perubahan pilihan barang
         selectElement.addEventListener('change', updateBarangOptions);
 
         table.appendChild(newRow);
@@ -153,7 +168,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Jalankan pertama kali untuk validasi awal
     updateBarangOptions();
 });
 </script>
