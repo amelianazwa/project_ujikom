@@ -80,6 +80,11 @@
                                 <label class="form-label">Tanggal Peminjaman</label>
                                 <input type="date" class="form-control" name="tanggal_peminjaman" value="{{ old('tanggal_peminjaman') }}" required>
                             </div>
+                            <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tanggal Pengembalian</label>
+                                <input type="date" class="form-control" name="tanggal_pengembalian" value="{{ old('tanggal_pengembalian') }}" required>
+                            </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Waktu Peminjaman</label>
                                 <input type="text" class="form-control" name="waktu_peminjaman" value="{{ old('waktu_peminjaman') }}" required>

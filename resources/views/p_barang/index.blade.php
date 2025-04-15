@@ -20,7 +20,7 @@
 
 @section('content')
 <div class="container mt-3">
-    <div class="card">
+<div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Pengembalian Barang</h5>
             <a href="{{ route('p_barang.create') }}" class="btn btn-sm btn-primary">Tambah</a>
@@ -29,13 +29,13 @@
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-striped" id="example">
-                <thead class="bg-light text-dark">
+                    <thead class="bg-light text-dark">
                         <tr>
                             <th>No</th>
-                            <th>Kode Peminjaman</th>
-                            <th>Nama Pengembali</th>
+                            <th>Kode Pengembalian</th>
                             <th>Tanggal Pengembalian</th>
                             <th>Keterangan</th>
+                            <th>Denda</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -44,20 +44,39 @@
                         @foreach ($p_barang as $data)
                         <tr>
                             <td>{{ $i++ }}</td>
-                            <td>{{ $data->code_peminjaman }}</td> <!-- ✅ Pastikan pakai code_peminjaman -->
-                            <td>{{ $data->nama_pengembali }}</td>
-                            <td>{{ \Carbon\Carbon::parse($data->tanggal_pengembalian)->format('d M Y') }}</td> <!-- ✅ Format tanggal -->
-                            <td>{{ $data->keterangan ?? '-' }}</td> <!-- ✅ Jika kosong, tampilkan '-' -->
-
+                            <td>{{ $data->id_pm_barang }}</td> <!-- ID peminjaman barang -->
+                            <td>{{ \Carbon\Carbon::parse($data->tanggal_selesai)->format('d M Y') }}</td> <!-- Format tanggal pengembalian -->
+                            <td>{{ $data->keterangan ?? '-' }}</td> <!-- Keterangan, jika ada -->
+                            <td>
+                            @php
+    $denda = 0;
+    // Denda rusak
+    if (strpos(strtolower($data->keterangan), 'rusak') !== false) {
+        $denda = 5000;
+    }
+    // Denda terlambat
+    $pm_barang = $data->pm_barang; // Pastikan relasi ini ada
+    if ($pm_barang) { // Cek apakah $pm_barang tidak null
+        $tanggal_pengembalian = \Carbon\Carbon::parse($pm_barang->tanggal_pengembalian);
+        $tanggal_selesai = \Carbon\Carbon::parse($data->tanggal_selesai);
+        if ($tanggal_selesai->greaterThan($tanggal_pengembalian)) {
+            $daysLate = $tanggal_pengembalian->diffInDays($tanggal_selesai);
+            $denda += $daysLate * 10000;
+        }
+    } else {
+        // Debugging
+        dd($data, $pm_barang); // Ini akan menampilkan data dan relasi
+    }
+@endphp
+Rp. {{ number_format($denda, 0, ',', '.') }}
+                            </td>
                             <td>
                                 <div class="dropdown">
                                     <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                         ⋮
                                     </button>
                                     <ul class="dropdown-menu">
-                                        <li>
-                                            <a class="dropdown-item" href="{{ route('p_barang.edit', $data->id) }}">✏ Edit</a>
-                                        </li>
+                                        
                                         <li>
                                             <button class="dropdown-item text-danger btn-delete" data-id="{{ $data->id }}">🗑 Hapus</button>
                                         </li>
@@ -101,7 +120,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     let form = document.getElementById('delete-form');
-                    form.action = `/p_barang/${id}`;
+                    form.action = `/pengembalian/${id}`;
                     form.submit();
                 }
             });

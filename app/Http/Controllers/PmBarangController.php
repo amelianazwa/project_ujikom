@@ -45,6 +45,7 @@ class PmBarangController extends Controller
             'jumlah_pinjam' => 'required|array',
             'jumlah_pinjam.*' => 'integer|min:1',
             'tanggal_peminjaman' => 'required|date',
+            'tanggal_pengembalian' => 'required|date',
             'waktu_peminjaman' => 'required',
             'nim' => 'required', // Pastikan NIM dikirim
         ]);
@@ -63,6 +64,7 @@ class PmBarangController extends Controller
         $pm_barang->jenis_kegiatan = $request->jenis_kegiatan;
         $pm_barang->id_ruangan = $request->id_ruangan;
         $pm_barang->tanggal_peminjaman = $request->tanggal_peminjaman;
+        $pm_barang->tanggal_pengembalian = $request->tanggal_pengembalian;
         $pm_barang->waktu_peminjaman = $request->waktu_peminjaman;
         $pm_barang->save();
     
@@ -116,6 +118,7 @@ public function update(Request $request, $id)
         'jumlah_pinjam' => 'required|array',
         'jumlah_pinjam.*' => 'integer|min:1',
         'tanggal_peminjaman' => 'required|date',
+        'tanggal_pengembalian' => 'required|date',
         'waktu_peminjaman' => 'required',
     ]);
 
@@ -137,6 +140,7 @@ public function update(Request $request, $id)
         'jenis_kegiatan' => $request->jenis_kegiatan,
         'id_ruangan' => $request->id_ruangan,
         'tanggal_peminjaman' => $request->tanggal_peminjaman,
+        'tanggal_pengembalian' => $request->tanggal_pengembalian,
         'waktu_peminjaman' => $request->waktu_peminjaman,
     ]);
 

@@ -29,6 +29,7 @@
                                     <th>Jumlah Pinjam</th>
                                     <th>Nama Ruangan</th>
                                     <th>Tanggal Peminjaman</th>
+                                    <th>Tanggal Pengembalian</th>
                                     <th>Waktu Peminjaman</th>
                                     <th>Serah Terima</th>
                                     <th>Berita Peminjaman</th>
@@ -60,6 +61,7 @@
                                     </td>
                                     <td>{{ $data->ruangan->nama_ruangan }}</td>
                                     <td>{{ $data->tanggal_peminjaman }}</td>
+                                    <td>{{ $data->tanggal_pengembalian }}</td>
                                     <td>{{ $data->waktu_peminjaman }}</td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#pdfModal2-{{ $data->id }}">

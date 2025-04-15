@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('p_barangs', function (Blueprint $table) {
             $table->id();
-            $table->string('code_peminjaman')->unique();
-            $table->string('nama_pengembali');
-            $table->date('tanggal_pengembalian');
-            $table->text('keterangan')->nullable();
+            $table->bigInteger('id_pm_barang')->unsigned();
+            $table->date('tanggal_selesai');
+            $table->string('keterangan');
             $table->timestamps();
         });
     }

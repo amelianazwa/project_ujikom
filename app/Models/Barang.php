@@ -59,4 +59,8 @@ class Barang extends Model
 
         return $isDipinjam ? 'Dipinjam' : 'Tersedia';
     }
+    public function p_barang()
+    {
+        return $this->hasMany(p_barang::class, 'id_barang');
+    }
 }

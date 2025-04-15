@@ -41,6 +41,11 @@
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label">Tanggal Pengembalian</label>
+                    <input type="date" name="tanggal_pengembalian" class="form-control" value="{{ $pm_barang->tanggal_pengembalian }}" required>
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label">Waktu Peminjaman</label>
                     <input type="time" name="waktu_peminjaman" class="form-control" value="{{ $pm_barang->waktu_peminjaman }}" required>
                 </div>

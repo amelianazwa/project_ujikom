@@ -9,7 +9,7 @@
                     <a href="{{ route('pm_ruangan.index') }}" class="btn btn-sm btn-primary">Kembali</a>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('pm_ruangan.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('pm_ruangan.store') }}" method="POST" enctype="multipart/form-data" id="formPeminjaman">
                         @csrf
 
                         <div class="mb-3">
@@ -19,7 +19,7 @@
 
                         <div class="mb-3">
                             <label for="nim" class="form-label">NIM</label>
-                            <input type="text" id="nim" name="nim" class="form-control">
+                            <input type="text" id="nim" name="nim" class="form-control" required>
                         </div>
 
                         <div class="mb-3">
@@ -27,6 +27,9 @@
                             <input type="hidden" id="id_anggota" name="id_anggota">
                             <input type="text" id="nama_peminjam" class="form-control bg-light" readonly>
                         </div>
+
+                        {{-- Debug helper --}}
+                        <p><strong>DEBUG ID Anggota:</strong> <span id="debug_id_anggota">-</span></p>
 
                         <div class="mb-3">
                             <label class="form-label">Jenis Kegiatan</label>
@@ -69,6 +72,10 @@
                                 <input type="date" class="form-control" name="tanggal_peminjaman" value="{{ old('tanggal_peminjaman') }}" required>
                             </div>
                             <div class="col-md-6 mb-3">
+                                <label class="form-label">Tanggal Pengembalian</label>
+                                <input type="date" class="form-control" name="tanggal_pengembalian" value="{{ old('tanggal_pengembalian') }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
                                 <label class="form-label">Waktu Peminjaman</label>
                                 <input type="text" class="form-control" name="waktu_peminjaman" value="{{ old('waktu_peminjaman') }}" required>
                             </div>
@@ -84,28 +91,40 @@
     </div>
 </div>
 
+{{-- SCRIPT --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     let dataAnggota = @json($anggota);
 
-    document.getElementById('nim').addEventListener('input', function () {
-        let nimInput = this.value.trim();
-        let namaField = document.getElementById('nama_peminjam');
-        let idAnggotaField = document.getElementById('id_anggota');
-        let foundAnggota = dataAnggota.find(a => a.nim === nimInput);
+    const nimInput = document.getElementById('nim');
+    const namaField = document.getElementById('nama_peminjam');
+    const idAnggotaField = document.getElementById('id_anggota');
+    const debugIdAnggota = document.getElementById('debug_id_anggota');
 
-        if (foundAnggota) {
-            namaField.value = foundAnggota.nama_peminjam;
-            idAnggotaField.value = foundAnggota.id;
+    nimInput.addEventListener('input', function () {
+        let nim = this.value.trim();
+        let found = dataAnggota.find(a => a.nim === nim);
+
+        if (found) {
+            namaField.value = found.nama_peminjam;
+            idAnggotaField.value = found.id;
+            debugIdAnggota.textContent = found.id;
         } else {
             namaField.value = "";
             idAnggotaField.value = "";
+            debugIdAnggota.textContent = "-";
+        }
+    });
+
+    document.getElementById('formPeminjaman').addEventListener('submit', function (e) {
+        if (!idAnggotaField.value) {
+            e.preventDefault();
+            alert('NIM tidak ditemukan. Pastikan Anda memasukkan NIM yang benar!');
         }
     });
 
     function updateRuanganOptions() {
         let selectedItems = [];
-
         document.querySelectorAll('.ruangan-select').forEach(select => {
             if (select.value) {
                 selectedItems.push(select.value);
@@ -127,7 +146,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('add-ruangan').addEventListener('click', function () {
         let table = document.getElementById('ruangan-table').getElementsByTagName('tbody')[0];
         let newRow = document.querySelector('.ruangan-row').cloneNode(true);
-
         newRow.querySelector(".ruangan-select").value = "";
         table.appendChild(newRow);
         updateRuanganOptions();

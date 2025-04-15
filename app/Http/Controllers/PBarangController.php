@@ -6,20 +6,16 @@ use App\Models\p_barang;
 use App\Models\pm_barang;
 use App\Models\peminjaman_detail;
 use Illuminate\Http\Request;
-use RealRashid\SweetAlert\Facades\Alert;
+use Carbon\Carbon;
 
 class PBarangController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function index()
-    {
-        $p_barang = p_barang::all();
-        return view('p_barang.index', compact('p_barang'));
-    }
+{
+    // Menampilkan list pengembalian ruangan yang telah dilakukan
+    $p_barang = p_barang::with('pm_barang')->get(); // Hapus tanda kurung siku
+    return view('p_barang.index', compact('p_barang'));
+}
 
     public function create()
     {
@@ -27,83 +23,53 @@ class PBarangController extends Controller
         return view('p_barang.create', compact('pm_barang'));
     }
 
+
     public function store(Request $request)
-    {
-        // Simpan data pengembalian barang
-        $p_barang = new p_barang();
-        $p_barang->code_peminjaman = $request->code_peminjaman;
-        $p_barang->nama_pengembali = $request->nama_pengembali;
-        $p_barang->tanggal_pengembalian = $request->tanggal_pengembalian;
-        $p_barang->keterangan = $request->keterangan;
-        $p_barang->save();
+{
+    // Validasi input dari form
+    $validated = $request->validate([
+        'id_pm_barang' => 'required|exists:pm__barangs,id',
+        'tanggal_selesai' => 'required|date',
+        'keterangan' => 'nullable|string',
+    ]);
 
-        // Ambil data peminjaman berdasarkan kode peminjaman
-        $pm_barang = pm_barang::where('code_peminjaman', $request->code_peminjaman)->first();
+    // Ambil data peminjaman barang
+    $pm_barang = pm_barang::findOrFail($request->id_pm_barang);
 
-        if ($pm_barang) {
-            foreach ($pm_barang->peminjaman_details as $detail) {
-                $barang = $detail->barang;
-                if ($barang) {
-                    $barang->jumlah += $detail->jumlah_pinjam;
-                    $barang->save();
-                }
-            }
-        }
+    // Perbaikan: gunakan nama kolom yang benar
+    $tanggal_kembali = Carbon::parse($pm_barang->tanggal_pengembalian);
+    $tanggal_selesai = Carbon::parse($request->tanggal_selesai);
 
-        Alert::success('Success', 'Barang berhasil dikembalikan')->autoClose(1000);
-        return redirect()->route('p_barang.index');
+    $denda = 0;
+
+    // Denda karena kerusakan
+    if ($request->keterangan && strpos(strtolower($request->keterangan), 'rusak') !== false) {
+        $denda += 5000;
     }
 
-    public function edit($id)
-    {
-        $p_barang = p_barang::findOrFail($id);
-        return view('p_barang.edit', compact('p_barang'));
+    // Denda karena keterlambatan
+    if ($tanggal_selesai->greaterThan($tanggal_kembali)) {
+        $daysLate = $tanggal_kembali->diffInDays($tanggal_selesai);
+        $denda += $daysLate * 10000;
     }
 
-    public function update(Request $request, $id)
+    // Simpan data pengembalian
+    p_barang::create([
+        'id_pm_barang' => $request->id_pm_barang,
+        'tanggal_selesai' => $request->tanggal_selesai,
+        'keterangan' => $request->keterangan,
+    ]);
+
+    // Contoh update status jika diperlukan
+    
+    $pm_barang->save();
+
+    return redirect()->route('p_barang.index')->with('success', "Pengembalian berhasil dengan denda Rp. " . number_format($denda, 0, ',', '.'));
+}
+
+    public function show($id)
     {
-        $validated = $request->validate([
-            'nama_pengembali' => 'required',
-            'tanggal_pengembalian' => 'required|date',
-            'keterangan' => 'nullable',
-        ]);
-
-        $p_barang = p_barang::findOrFail($id);
-        $p_barang->nama_pengembali = $request->nama_pengembali;
-        $p_barang->tanggal_pengembalian = $request->tanggal_pengembalian;
-        $p_barang->keterangan = $request->keterangan;
-        $p_barang->save();
-
-        Alert::success('Success', 'Data pengembalian diperbarui')->autoClose(1000);
-        return redirect()->route('p_barang.index');
-    }
-
-    public function destroy($id)
-    {
-        $p_barang = p_barang::findOrFail($id);
-        $p_barang->delete();
-        Alert::success('Success', 'Data pengembalian dihapus');
-        return redirect()->route('p_barang.index');
-    }
-
-    // ✅ Tambahan fungsi getPeminjamanDetails
-    public function getPeminjamanDetails($code_peminjaman)
-    {
-        $pm_barang = pm_barang::where('code_peminjaman', $code_peminjaman)
-                    ->with('peminjaman_details.barang') // Pastikan relasi barang di-load
-                    ->first();
-
-        if (!$pm_barang) {
-            return response()->json(['error' => 'Data tidak ditemukan'], 404);
-        }
-
-        return response()->json([
-            'peminjaman_details' => $pm_barang->peminjaman_details->map(function ($detail) {
-                return [
-                    'nama_barang' => optional($detail->barang)->nama_barang ?? 'Barang tidak ditemukan',
-                    'jumlah_pinjam' => $detail->jumlah_pinjam
-                ];
-            })
-        ]);
+        $pengembalian = p_barang::findOrFail($id);
+        return view('pengembalian.show', compact('pengembalian'));
     }
 }

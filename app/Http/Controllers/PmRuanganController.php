@@ -75,6 +75,7 @@ class PmRuanganController extends Controller
     $pm_ruangan->id_anggota = $request->id_anggota;
     $pm_ruangan->jenis_kegiatan = $request->jenis_kegiatan;
     $pm_ruangan->tanggal_peminjaman = $request->tanggal_peminjaman;
+    $pm_ruangan->tanggal_pengembalian = $request->tanggal_pengembalian;
     $pm_ruangan->waktu_peminjaman = $request->waktu_peminjaman;
 
     $pm_ruangan->save();
@@ -125,6 +126,7 @@ public function update(Request $request, $code_peminjaman)
         'id_anggota' => $request->id_anggota,
         'jenis_kegiatan' => $request->jenis_kegiatan,
         'tanggal_peminjaman' => $request->tanggal_peminjaman,
+        'tanggal_pengembalian' => $request->tanggal_pengembalian,
         'waktu_peminjaman' => $request->waktu_peminjaman,
     ]);
     

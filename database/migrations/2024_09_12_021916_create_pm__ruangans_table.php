@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('code_peminjaman');
             $table->bigInteger('id_anggota')->unsigned();
             $table->string('tanggal_peminjaman');
+            $table->string('tanggal_pengembalian');
             $table->string('jenis_kegiatan');
             $table->string('waktu_peminjaman');
             $table->timestamps();

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class pm_Ruangan extends Model
 {
     use HasFactory;
-    protected $fillable = ['id','code_peminjaman','id_anggota','tanggal_peminjaman','jenis_kegiatan','waktu_peminjaman','cover'];
+    protected $fillable = ['id','code_peminjaman','id_anggota','tanggal_peminjaman','tanggal_pengembalian','jenis_kegiatan','waktu_peminjaman','cover'];
     public $timestamps = true;
 
     public function ruangan()
