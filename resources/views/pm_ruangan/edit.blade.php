@@ -8,7 +8,8 @@
             <a href="{{ route('pm_ruangan.index') }}" class="btn btn-primary btn-sm">Kembali</a>
         </div>
         <div class="card-body">
-            <form action="{{ route('pm_ruangan.update', $pm_ruangan->id) }}" method="POST">
+            <!-- Ganti dari $pm_ruangan->id ke $pm_ruangan->code_peminjaman -->
+            <form action="{{ route('pm_ruangan.update', $pm_ruangan->code_peminjaman) }}" method="POST">
                 @csrf
                 @method('PUT')
                 

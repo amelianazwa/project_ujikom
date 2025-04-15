@@ -121,14 +121,14 @@
         ⋮
     </button>
     <ul class="dropdown-menu">
-        <li><a href="{{ route('pm_barang.edit', $data->code_peminjaman) }}" class="dropdown-item">Edit</a></li>
-        <li>
-            <form action="{{ route('pm_barang.destroy', $data->id) }}" method="POST" class="d-inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
-            </form>
-        </li>
+                                                <li><a href="{{ route('pm_ruangan.edit', $data->code_peminjaman) }}" class="dropdown-item">Edit</a></li>
+                                                <li>
+                                                    <form action="{{ route('pm_ruangan.destroy', $data->id) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                                                    </form>
+                                                </li>
     </ul>
 </div>
 

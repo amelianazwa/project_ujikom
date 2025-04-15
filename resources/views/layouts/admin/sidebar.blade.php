@@ -124,7 +124,7 @@
                     </a>
                 </li>
                 <li class="menu-item {{ request()->routeIs('p_ruangan.index') ? 'active' : '' }}">
-                    <a href="#" class="menu-link">
+                    <a href="{{ route('p_ruangan.index') }}" class="menu-link">
                         <i class="menu-icon tf-icons bx bx-door-open"></i> <!-- Ikon Pengembalian Ruangan -->
                         <div>Pengembalian Ruangan</div>
                     </a>

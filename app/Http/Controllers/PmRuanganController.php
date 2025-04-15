@@ -98,57 +98,48 @@ class PmRuanganController extends Controller
     }
 
 
-    public function edit($id)
-    {
-        \Log::info("ID yang diterima di edit: " . $id);
+    public function edit($code_peminjaman)
+{
+    $pm_ruangan = pm_ruangan::where('code_peminjaman', $code_peminjaman)->first();
+    if (!$pm_ruangan) {
+        return redirect()->route('pm_ruangan.index')->with('error', 'Data peminjaman tidak ditemukan');
+    }
+
+    // Ambil detail ruangan yang dipinjam
+    $details = PeminjamanDetailRuangan::where('id_pm_ruangan', $pm_ruangan->id)->get();
+    $ruangan = Ruangan::all();
+    $anggota = Anggota::all();
+
+    return view('pm_ruangan.edit', compact('pm_ruangan', 'details', 'ruangan', 'anggota'));
+}
     
-        // Ambil satu data peminjaman ruangan
-        $pm_ruangan = pm_ruangan::where('code_peminjaman', $id)->first();
-        if (!$pm_ruangan) {
-            return redirect()->route('pm_ruangan.index')->with('error', 'Data peminjaman tidak ditemukan');
-        }
+public function update(Request $request, $code_peminjaman)
+{
+    $pm_ruangan = pm_ruangan::where('code_peminjaman', $code_peminjaman)->firstOrFail();
     
-        // Ambil detail ruangan yang dipinjam
-        $details = PeminjamanDetailRuangan::where('id_pm_ruangan', $pm_ruangan->id)->get();
-        $ruangan = Ruangan::all();
-        $anggota = Anggota::all();
+    // Hapus detail lama
+    PeminjamanDetailRuangan::where('id_pm_ruangan', $pm_ruangan->id)->delete();
     
-        return view('pm_ruangan.edit', compact('pm_ruangan', 'details', 'ruangan', 'anggota'));
+    // Update data peminjaman
+    $pm_ruangan->update([
+        'id_anggota' => $request->id_anggota,
+        'jenis_kegiatan' => $request->jenis_kegiatan,
+        'tanggal_peminjaman' => $request->tanggal_peminjaman,
+        'waktu_peminjaman' => $request->waktu_peminjaman,
+    ]);
+    
+    // Simpan detail ruangan baru
+    foreach ($request->id_ruangan as $id_ruangan) {
+        PeminjamanDetailRuangan::create([
+            'id_pm_ruangan' => $pm_ruangan->id,
+            'id_ruangan' => $id_ruangan,
+        ]);
     }
     
-    public function update(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'jenis_kegiatan' => 'required',
-            'id_ruangan' => 'required|array|min:1',
-            'tanggal_peminjaman' => 'required|date',
-            'waktu_peminjaman' => 'required',
-        ]);
-    
-        $pm_ruangan = pm_ruangan::where('code_peminjaman', $id)->firstOrFail();
-    
-        // Hapus detail lama
-        PeminjamanDetailRuangan::where('id_pm_ruangan', $pm_ruangan->id)->delete();
-    
-        // Update data peminjaman
-        $pm_ruangan->update([
-            'id_anggota' => $request->id_anggota,
-            'jenis_kegiatan' => $request->jenis_kegiatan,
-            'tanggal_peminjaman' => $request->tanggal_peminjaman,
-            'waktu_peminjaman' => $request->waktu_peminjaman,
-        ]);
-    
-        // Simpan detail ruangan baru
-        foreach ($request->id_ruangan as $id_ruangan) {
-            PeminjamanDetailRuangan::create([
-                'id_pm_ruangan' => $pm_ruangan->id,
-                'id_ruangan' => $id_ruangan,
-            ]);
-        }
-    
-        Alert::success('Success', 'Data berhasil diperbarui')->autoClose(1000);
-        return redirect()->route('pm_ruangan.index');
-    }
+    Alert::success('Success', 'Data berhasil diperbarui')->autoClose(1000);
+    return redirect()->route('pm_ruangan.index');
+}
+
     
 
 

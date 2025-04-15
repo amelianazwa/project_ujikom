@@ -34,7 +34,7 @@
                             <th>Nama Merk</th>
                             <th>Kategori</th>
                             <th>Detail</th>
-                            <th>Stok Barang</th>
+                            <th>Stok Tersedia</th>
                             <th>Status</th> <!-- Kolom Status -->
                             <th>Aksi</th>
                         </tr>
