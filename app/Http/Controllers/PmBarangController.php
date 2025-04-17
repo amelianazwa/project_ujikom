@@ -167,19 +167,28 @@ public function update(Request $request, $id)
     return redirect()->route('pm_barang.index');
 }
 
-    public function destroy($id)
-    {
-        $pm_barang = pm_barang::findOrFail($id);
-        $barang = Barang::findOrFail($pm_barang->id_barang);
+public function destroy($id)
+{
+    $pm_barang = pm_barang::findOrFail($id);
 
-        // Kembalikan stok barang sebelum dihapus
-        $barang->jumlah += $pm_barang->jumlah_pinjam;
+    $details = peminjaman_detail::where('id_pm_barang', $pm_barang->id)->get();
+    
+    foreach ($details as $detail) {
+        $barang = Barang::findOrFail($detail->id_barang);
+        $barang->jumlah += $detail->jumlah_pinjam;
         $barang->save();
-
-        $pm_barang->delete();
-        Alert::success('Success', 'Data berhasil dihapus');
-        return redirect()->route('pm_barang.index');
     }
+
+   
+    peminjaman_detail::where('id_pm_barang', $pm_barang->id)->delete();
+
+   
+    $pm_barang->delete();
+
+    Alert::success('Success', 'Data berhasil dihapus');
+    return redirect()->route('pm_barang.index');
+}
+
 
     public function cariAnggota(Request $request)
 {

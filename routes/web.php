@@ -42,6 +42,8 @@ Route::put('/pm_ruangan/{code_peminjaman}', [PmRuanganController::class, 'update
 
 Route::resource('p_ruangan', App\Http\Controllers\PRuanganController::class)->middleware('auth');
 Route::resource('p_barang', App\Http\Controllers\PBarangController::class)->middleware('auth');
+Route::get('/get-detail-peminjaman-barang/{id}', [App\Http\Controllers\PBarangController::class, 'getDetailPeminjaman']);
+
 
 Route::resource('l_barang', App\Http\Controllers\LBarangController::class)->middleware('auth');
 Route::resource('l_ruangan', App\Http\Controllers\LRuanganController::class)->middleware('auth');

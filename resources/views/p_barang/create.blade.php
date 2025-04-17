@@ -30,7 +30,7 @@
                                 <option value="">-- Pilih Peminjaman --</option>
                                 @foreach($pm_barang as $item)
                                     <option value="{{ $item->id }}" data-tanggal="{{ $item->tanggal_pengembalian }}">
-                                        {{ $item->code_peminjaman }} - {{ $item->anggota->nama ?? 'Tanpa Nama' }}
+                                        {{ $item->code_peminjaman }} - {{ $item->anggota->nama_peminjam ?? 'Tanpa Nama' }}
                                     </option>
                                 @endforeach
                             </select>

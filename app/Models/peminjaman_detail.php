@@ -21,4 +21,8 @@ class peminjaman_detail extends Model
     {
         return $this->belongsTo(Barang::class, 'id_barang');
     }
+    public function p_barang()
+    {
+        return $this->hasMany(p_barang::class, 'id_pm_barang');
+    }
 }

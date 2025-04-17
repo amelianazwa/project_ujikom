@@ -8,11 +8,26 @@
 <div class="container mt-10">
     <div class="row page-titles mx-0">
         <div class="col-sm-12 p-md-0">
-        </div>
+            </div>
     </div>
 </div>
-
 <div class="container">
+
+    <!-- Notifikasi Pesan -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="card">
         <div class="card-header">
             <div class="float-start">
@@ -29,12 +44,8 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Kode Barang</th>
                             <th>Nama Barang</th>
-                            <th>Nama Merk</th>
-                            <th>Kategori</th>
-                            <th>Detail</th>
-                            <th>Stok Tersedia</th>
+                            <th>Jumlah Tersedia</th>
                             <th>Status</th> <!-- Kolom Status -->
                             <th>Aksi</th>
                         </tr>
@@ -44,19 +55,16 @@
                         @foreach ($barang as $data)
                         <tr>
                             <td>{{ $i++ }}</td>
-                            <td>{{ $data->code_barang }}</td>
                             <td>{{ $data->nama_barang }}</td>
-                            <td>{{ $data->merk }}</td>
-                            <td>{{ $data->kategori->nama_kategori }}</td>
-                            <td>{{ $data->detail }}</td>
                             <td>{{ $data->jumlah }}</td>
                             <td>
-                                @if($data->status === 'Dipinjam')
-                                    <span class="badge bg-danger">Dipinjam</span>
-                                @else
+                                <!-- Status -->
+                                @if($data->jumlah > 0)
                                     <span class="badge bg-success">Tersedia</span>
+                                @else
+                                    <span class="badge bg-danger">Dipinjam</span>
                                 @endif
-                            </td> <!-- Menampilkan status barang -->
+                            </td>
                             <td>
                                 <div class="dropdown d-inline">
                                     <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -70,7 +78,7 @@
                                             <form action="{{ route('barang.destroy', $data->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="dropdown-item text-danger">🗑 Hapus</button>
+                                                <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Yakin ingin menghapus?')">🗑 Hapus</button>
                                             </form>
                                         </li>
                                     </ul>
@@ -85,3 +93,11 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.js"></script>
+<script>
+    new DataTable('#example');
+</script>
+@endpush

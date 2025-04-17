@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\p_barang;
 use App\Models\pm_barang;
 use App\Models\peminjaman_detail;
+use App\Models\Barang;
+use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -54,22 +56,82 @@ class PBarangController extends Controller
     }
 
     // Simpan data pengembalian
-    p_barang::create([
+    $p_barang = p_barang::create([
         'id_pm_barang' => $request->id_pm_barang,
         'tanggal_selesai' => $request->tanggal_selesai,
         'keterangan' => $request->keterangan,
     ]);
 
-    // Contoh update status jika diperlukan
-    
+    // Mengembalikan stok barang yang dipinjam
+    $peminjaman_details = peminjaman_detail::where('id_pm_barang', $pm_barang->id)->get();
+
+    foreach ($peminjaman_details as $detail) {
+        // Temukan barang yang dipinjam
+        $barang = \App\Models\Barang::findOrFail($detail->id_barang);
+
+        // Tambahkan jumlah barang yang dipinjam ke stok yang tersedia
+        $barang->jumlah += $detail->jumlah_pinjam;
+        $barang->save();
+    }
+
+    // Update status peminjaman jika perlu
+    // Misalnya status dipakai untuk menandakan pengembalian
     $pm_barang->save();
 
     return redirect()->route('p_barang.index')->with('success', "Pengembalian berhasil dengan denda Rp. " . number_format($denda, 0, ',', '.'));
 }
+
 
     public function show($id)
     {
         $pengembalian = p_barang::findOrFail($id);
         return view('pengembalian.show', compact('pengembalian'));
     }
+
+    public function destroy($id)
+{
+    $p_barang = p_barang::find($id); 
+    
+    if (!$p_barang) {
+        return redirect()->route('p_barang.index')->with('error', 'Data pengembalian tidak ditemukan.');
+    }
+    $details = peminjaman_detail::where('id_pm_barang', $p_barang->id_pm_barang)->get();
+
+    if ($details->isEmpty()) {
+        return redirect()->route('p_barang.index')->with('error', 'Detail peminjaman tidak ditemukan.');
+    }
+    foreach ($details as $detail) {
+        $barang = Barang::findOrFail($detail->id_barang);
+        $barang->jumlah -= $detail->jumlah_pinjam; 
+        $barang->save();
+    }
+
+    peminjaman_detail::where('id_pm_barang', $p_barang->id_pm_barang)->delete();
+
+    $p_barang->delete();
+
+    Alert::success('Success', 'Data pengembalian berhasil dihapus.');
+    return redirect()->route('p_barang.index');
+}
+
+public function getDetailPeminjaman($id)
+{
+    $pm = pm_barang::with(['anggota', 'detail.barang'])->find($id);
+    if (!$pm) {
+        return response()->json(['message' => 'Data tidak ditemukan'], 404);
+    }
+
+    return response()->json([
+        'nama' => $pm->anggota->nama ?? 'Tidak diketahui',
+        'barang' => $pm->detail->map(function ($item) {
+            return [
+                'code_barang' => $item->barang->code_barang ?? '-',
+                'nama_barang' => $item->barang->nama_barang ?? '-',
+            ];
+        }),
+    ]);
+}
+
+
+    
 }

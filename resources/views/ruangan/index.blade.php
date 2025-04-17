@@ -1,6 +1,3 @@
-
-
-
 @extends('layouts.admin')
 
 @section('styles')
@@ -36,6 +33,7 @@
                         <th>Nama Ruangan</th>
                         <th>Nama PIC</th>
                         <th>Posisi Ruangan</th>
+                        <th>Status</th> <!-- Kolom status ditambahkan di sini -->
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -47,27 +45,32 @@
                         <td>{{ $data->nama_ruangan }}</td>
                         <td>{{ $data->nama_pic }}</td>
                         <td>{{ $data->posisi_ruangan }}</td>
-
+                        <td>
+                                @if($data->status === 'Dipinjam')
+                                    <span class="badge bg-danger">Dipinjam</span>
+                                @else
+                                    <span class="badge bg-success">Tersedia</span>
+                                @endif
+                            </td>
                         <td>
                             <div class="dropdown d-inline">
-     <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-         ⋮
-     </button>
-     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-         <li>
-             <a class="dropdown-item" href="{{ route('ruangan.edit', $data->id) }}">✏ Edit</a>
-         </li>
-         <li>
-             <form action="{{ route('ruangan.destroy', $data->id) }}" method="POST" class="d-inline">
-                 @csrf
-                 @method('DELETE')
-                 <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Yakin ingin menghapus?')">🗑 Hapus</button>
-             </form>
-         </li>
-     </ul>
- </div>
-
-                         </td>
+                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    ⋮
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('ruangan.edit', $data->id) }}">✏ Edit</a>
+                                    </li>
+                                    <li>
+                                        <form action="{{ route('ruangan.destroy', $data->id) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Yakin ingin menghapus?')">🗑 Hapus</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>

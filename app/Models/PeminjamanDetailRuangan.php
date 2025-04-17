@@ -21,6 +21,9 @@ class PeminjamanDetailRuangan extends Model
     {
         return $this->belongsTo(ruangan::class, 'id_ruangan');
     }
-
+    public function p_ruangan()
+    {
+        return $this->hasMany(p_ruangan::class, 'id_pm_ruangan');
+    }
 
 }
