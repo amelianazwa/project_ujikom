@@ -30,5 +30,9 @@ class ruangan extends Model
     {
         return $this->hasMany(p_ruangan::class, 'id_ruangan');
     }
+    public function peminjamandetailruangan()
+{
+    return $this->hasMany(peminjamandetailruangan::class, 'id_ruangan');
+}
 }
 

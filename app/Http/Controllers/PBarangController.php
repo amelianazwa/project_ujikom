@@ -38,7 +38,6 @@ class PBarangController extends Controller
     // Ambil data peminjaman barang
     $pm_barang = pm_barang::findOrFail($request->id_pm_barang);
 
-    // Perbaikan: gunakan nama kolom yang benar
     $tanggal_kembali = Carbon::parse($pm_barang->tanggal_pengembalian);
     $tanggal_selesai = Carbon::parse($request->tanggal_selesai);
 
@@ -74,12 +73,13 @@ class PBarangController extends Controller
         $barang->save();
     }
 
-    // Update status peminjaman jika perlu
-    // Misalnya status dipakai untuk menandakan pengembalian
+    // Update status peminjaman jika ingin, misal menandai sudah dikembalikan
+    // $pm_barang->status = 'dikembalikan';
     $pm_barang->save();
 
     return redirect()->route('p_barang.index')->with('success', "Pengembalian berhasil dengan denda Rp. " . number_format($denda, 0, ',', '.'));
 }
+
 
 
     public function show($id)

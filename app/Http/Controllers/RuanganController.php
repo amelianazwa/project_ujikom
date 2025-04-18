@@ -103,11 +103,30 @@ class RuanganController extends Controller
      */
     public function destroy($id)
     {
-        $ruangan =  ruangan::FindOrFail($id);
-
+        $ruangan = Ruangan::findOrFail($id);
+    
+        // Cek apakah ruangan sedang dipinjam dan belum dikembalikan
+        $isDipinjam = $ruangan->peminjamandetailruangan()
+            ->whereHas('pm_ruangan', function ($query) {
+                $query->whereNotIn('id', function ($subQuery) {
+                    $subQuery->select('id_pm_ruangan')->from('p_ruangans'); // id yang sudah dikembalikan
+                });
+            })->exists();
+    
+        if ($isDipinjam) {
+            Alert::error('Error', 'Ruangan tidak bisa dihapus karena belum di kembalikan.');
+            return redirect()->route('ruangan.index');
+        }
+    
+        // Opsional: Cek apakah ruangan pernah dipinjam
+        if ($ruangan->peminjamandetailruangan()->exists()) {
+            Alert::error('Error', 'Ruangan tidak bisa dihapus karena pernah dipinjam.');
+            return redirect()->route('ruangan.index');
+        }
+    
         $ruangan->delete();
-        Alert::success('success','Data berhasil Dihapus');
+        Alert::success('Success', 'Ruangan berhasil dihapus.');
         return redirect()->route('ruangan.index');
-
     }
+    
 }

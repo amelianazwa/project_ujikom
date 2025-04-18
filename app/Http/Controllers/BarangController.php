@@ -73,22 +73,28 @@ class BarangController extends Controller
     }
 
     public function destroy($id)
-    {
-        $barang = Barang::findOrFail($id);
+{
+    $barang = Barang::findOrFail($id);
 
-        // Pastikan barang belum dipinjam atau sudah dikembalikan
-        $isDipinjam = $barang->peminjaman_details()
-            ->whereHas('pm_barang', function ($query) {
-                $query->whereNotIn('code_peminjaman', function ($subQuery) {
-                    $subQuery->select('code_peminjaman')->from('p_barangs'); // Barang yang sudah dikembalikan
-                });
-            })->exists();
+    // Cek apakah barang ini masih punya relasi peminjaman yang belum dikembalikan
+    $isDipinjam = $barang->peminjaman_details()
+        ->whereHas('pm_barang', function ($query) {
+            $query->whereNotIn('id', function ($subQuery) {
+                $subQuery->select('id_pm_barang')->from('p_barangs'); // id peminjaman yang sudah dikembalikan
+            });
+        })->exists();
 
-        if ($isDipinjam) {
-            return redirect()->route('barang.index')->with('error', 'Barang tidak bisa dihapus karena masih dipinjam.');
-        }
-
-        $barang->delete();
-        return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus.');
+    if ($isDipinjam) {
+        return redirect()->route('barang.index')->with('error', 'Barang tidak bisa dihapus karena masih dipinjam.');
     }
+
+    // Opsional: Cek relasi lain seperti detail pengembalian juga
+    if ($barang->peminjaman_details()->exists()) {
+        return redirect()->route('barang.index')->with('error', 'Barang tidak bisa dihapus karena pernah dipinjam.');
+    }
+
+    $barang->delete();
+    return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus.');
+}
+
 }

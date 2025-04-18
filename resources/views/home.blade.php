@@ -86,7 +86,7 @@
   </div>
 </div>
 
-<!-- Chart.js Script -->
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   var ctx = document.getElementById('dataChart').getContext('2d');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\p_ruangan;
 use App\Models\pm_ruangan;
 use App\Models\peminjamandetailruangan;
+use App\Models\Ruangan;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 

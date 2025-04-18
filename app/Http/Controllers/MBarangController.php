@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use App\Models\Ruangan;
-use App\Models\Kondisi;
 use App\Models\m_Barang;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Http\Request;
@@ -20,6 +19,7 @@ class MBarangController extends Controller
         $m_barang =  m_barang::all();
         confirmDelete('Delete','Are you sure?');
         return view('m_barang.index', compact('m_barang'));
+        return view('lm_barang.index', compact('m_barang'));
     }
 
 
@@ -27,27 +27,30 @@ class MBarangController extends Controller
     {
         $barang =  Barang::all();
         $ruangan =  Ruangan::all();
-        $kondisi = Kondisi::all();
-        return view('m_barang.create', compact('barang','ruangan', 'kondisi'));
+        return view('m_barang.create', compact('barang','ruangan'));
     }
 
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'posisi' => 'required',
-            'jenis_perbaikan' => 'required',
+            'code_maintenance' => 'required',
+            'tanggal_maintenance' => 'required',
             'waktu_pengerjaan' => 'required',
+            'keterangan' => 'required',
+
+
 
         ]);
 
         $m_barang = new m_barang();
+        $m_barang->code_maintenance = $request->code_maintenance;
         $m_barang->id_barang = $request->id_barang;
         $m_barang->id_ruangan = $request->id_ruangan;
-        $m_barang->posisi = $request->posisi;
-        $m_barang->jenis_perbaikan = $request->jenis_perbaikan;
+        $m_barang->tanggal_maintenance = $request->tanggal_maintenance;
         $m_barang->waktu_pengerjaan = $request->waktu_pengerjaan;
-        $m_barang->id_kondisi = $request->id_kondisi;
+        $m_barang->jumlah = $request->jumlah;
+        $m_barang->keterangan = $request->keterangan;
 
         Alert::success('Success','data berhasil disimpan')->autoClose(1000);
         $m_barang->save();
@@ -56,7 +59,7 @@ class MBarangController extends Controller
     }
 
 
-    public function show(m_barang $barang)
+    public function show(m_barang $ruangan)
     {
         //
     }
@@ -64,30 +67,29 @@ class MBarangController extends Controller
 
     public function edit($id)
     {
-        $barang =  Barang::all();
         $ruangan =  Ruangan::all();
-        $kondisi = Kondisi::all();
         $m_barang = m_barang::findOrFail($id);
-        return view('m_barang.edit', compact('m_barang','barang','ruangan','kondisi'));
+        return view('m_barang.edit', compact('m_barang','ruangan'));
     }
 
 
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'posisi' => 'required',
-            'jenis_perbaikan' => 'required',
+            'code_maintenance' => 'required',
+            'tanggal_maintenance' => 'required',
             'waktu_pengerjaan' => 'required',
+            'keterangan' => 'required',
+
 
         ]);
 
         $m_barang = m_barang::findOrFail($id);
-        $m_barang->id_barang = $request->id_barang;
+         $m_barang->code_maintenance = $request->code_maintenance;
         $m_barang->id_ruangan = $request->id_ruangan;
-        $m_barang->posisi = $request->posisi;
-        $m_barang->jenis_perbaikan = $request->jenis_perbaikan;
+        $m_barang->tanggal_maintenance = $request->tanggal_maintenance;
         $m_barang->waktu_pengerjaan = $request->waktu_pengerjaan;
-        $m_barang->id_kondisi = $request->id_kondisi;
+        $m_barang->keterangan = $request->keterangan;
 
 
         Alert::success('Success','data berhasil diubah')->autoClose(1000);

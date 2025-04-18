@@ -31,12 +31,13 @@
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>Code Maintenance</th>
                         <th>Nama Barang</th>
                         <th>Nama Ruangan</th>
-                        <th>Posisi</th>
-                        <th>Keterangan</th>
+                        <th>Tanggal Maintenance</th>
                         <th>Waktu Pengerjaan</th>
-                        <th>Kondisi</th>
+                        <th>Jumlah</th>
+                        <th>Keterangan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -45,12 +46,13 @@
                     @foreach ($m_barang as $data)
                     <tr>
                         <td>{{ $i++ }}</td>
+                        <td>{{ $data->code_maintenance }}</td>
                         <td>{{$data->barang->nama_barang}}</td>
                         <td>{{$data->ruangan->nama_ruangan}}</td>
-                        <td>{{ $data->posisi }}</td>
-                        <td>{{ $data->jenis_perbaikan }}</td>
+                        <td>{{ $data->tanggal_maintenace }}</td>
                         <td>{{ $data->waktu_pengerjaan }}</td>
-                        <td>{{$data->kondisi->kondisi}}</td>
+                        <td>{{$data->jumlah}}</td>
+                        <td>{{$data->keterangan}}</td>
 
                         <td>
                             <div class="dropdown d-inline">
